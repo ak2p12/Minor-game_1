@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class User : Unit
 {
-    bool move;
+    bool isMove;
+    bool isJump;
+    bool isAttack;
+    bool isDodge;
 
     void Start()
     {
@@ -24,45 +27,98 @@ public class User : Unit
         while (true)
         {
             MoveAction();
+            AttackAction();
             yield return null;
         }
     }
 
     void MoveAction()
     {
-        if (Input.GetKey(KeyCode.LeftArrow)) //왼 쪽
+        if (Input.GetKey(KeyCode.LeftArrow) && !isAttack && !isDodge) //왼 쪽
         {
             Rigid.velocity = new Vector2(Vector2.left.x * (MoveSpeed), Rigid.velocity.y);
             Render.flipX = true;
-            move = true;
+            isMove = true;
         }
-        else if (Input.GetKey(KeyCode.RightArrow)) //오른 쪽
+        else if (Input.GetKey(KeyCode.RightArrow) && !isAttack && !isDodge) //오른 쪽
         {
             Rigid.velocity = new Vector2(Vector2.right.x * (MoveSpeed), Rigid.velocity.y);
             Render.flipX = false;
-            move = true;
+            isMove = true;
         }
         else
         {
-            move = false;
+            isMove = false;
         }
-            
 
-        if (Input.GetKeyDown(KeyCode.UpArrow)) //위
+        if (Input.GetKey(KeyCode.LeftShift) && !isJump && !isDodge) //구르기
+        {
+            isDodge = true;
+            Anim.SetTrigger("Dodge");
+        }
+
+        if (isDodge)
+        {
+            if (Render.flipX == true) //왼쪽
+            {
+                Rigid.velocity = new Vector2(Vector2.left.x * (MoveSpeed * 1.5f), Rigid.velocity.y);
+            }
+            else if (Render.flipX == false) //오른쪽
+            {
+                Rigid.velocity = new Vector2(Vector2.right.x * (MoveSpeed * 1.5f), Rigid.velocity.y);
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space) && !isJump) //점프
         {
             Rigid.velocity = new Vector2(Rigid.velocity.x, JumpPower);
             Anim.SetTrigger("Jump");
+            isJump = true;
         }
 
         Anim.SetFloat("velocity_Y", Rigid.velocity.y);
         Anim.SetInteger("velocity_Y_Int", (int)Rigid.velocity.y);
-        Anim.SetBool("Walk", move);
+        Anim.SetBool("Walk", isMove);
     }
     void AttackAction()
     {
-        if (Input.GetKey(KeyCode.Z)) //공격
+        if (Input.GetKeyDown(KeyCode.Z) && !isAttack) //공격
         {
+            isAttack = true;
+            int randomAttack = Random.Range(1, 5);
+            Anim.SetTrigger("Attack_" + randomAttack.ToString());
+            Debug.Log(randomAttack.ToString());
 
         }
+    }
+    void AnimationJump_Start()
+    {
+        isAttack = false;
+    }
+    void AnimationJump_End()
+    {
+        isJump = false;
+        isAttack = false;
+    }
+    //void AnimationAttack_Start()
+    //{
+    //    isAttack = true;
+    //}
+    void AnimationAttack_End()
+    {
+        isAttack = false;
+    }
+    void AnimationIdle()
+    {
+        //isAttack = false;
+    }
+    void AnimationDodge_Start()
+    {
+        //isAttack = false;
+    }
+    void AnimationDodge_End()
+    {
+        isDodge = false;
+        isAttack = false;
     }
 }
