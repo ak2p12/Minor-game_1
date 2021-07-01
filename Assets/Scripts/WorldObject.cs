@@ -15,9 +15,13 @@ public class WolrdObject : MonoBehaviour, IDamage
         Render = GetComponent<SpriteRenderer>();
     }
 
-    public virtual bool Hit(float _damege)
+    public virtual bool Hit(float _damage)
     {
-        Debug.Log(gameObject.name + " Hit()");
-        return false;
+        return true;
     }
+    //public virtual bool Hit(float _damege)
+    //{
+    //    Debug.Log(gameObject.name + " Hit()");
+    //    return false;
+    //}
 }

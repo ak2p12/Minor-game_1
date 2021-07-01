@@ -4,22 +4,24 @@ using UnityEngine;
 
 public class Arrow : Bullet
 {
-    //// Start is called before the first frame update
-    //void Start()
-    //{
-        
-    //}
-
-    //// Update is called once per frame
-    //void Update()
-    //{
-        
-    //}
-
-
-    public override bool Hit(float _damege)
+    void Start()
     {
-        Debug.Log(gameObject.name + " Hit()");
-        return false;
+        StartCoroutine(Update_Coroutine());
+    }
+
+    IEnumerator Update_Coroutine()
+    {
+        while(true)
+        {
+            transform.Translate(Vector3.right * Speed * Time.deltaTime);
+            yield return null;
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag.Equals("Enemy"))
+        {
+            collision.gameObject.GetComponent<Enemy>().Hit(10.0f);
+        }
     }
 }

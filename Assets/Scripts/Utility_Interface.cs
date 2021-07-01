@@ -1,4 +1,4 @@
 ﻿interface IDamage
 {
-    bool Hit(float _damege);
+    bool Hit(float _damage);
 }

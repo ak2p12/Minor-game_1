@@ -19,4 +19,9 @@ public class Unit : WolrdObject
     {
 
     }
+
+    public override bool Hit(float _damage)
+    {
+        return true;
+    }
 }
