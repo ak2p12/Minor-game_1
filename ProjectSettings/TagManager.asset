@@ -7,6 +7,7 @@ TagManager:
   - Enemy
   - Land
   - Wall
+  - Arrow
   layers:
   - Default
   - TransparentFX
@@ -17,18 +18,18 @@ TagManager:
   - 
   - 
   - Unit
+  - 
+  - 
+  - 
+  - 
+  - 
+  - Bullet
+  - 
+  - 
+  - 
+  - 
+  - 
   - Terrain
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
   - 
   - 
   - 
