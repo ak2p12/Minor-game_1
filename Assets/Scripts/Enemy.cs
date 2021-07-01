@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Enemy : Unit
 {
-    public float FindRadiue;    //감지 범위
     public float AttackRadiue;  //공격 범위
 
     // Start is called before the first frame update
