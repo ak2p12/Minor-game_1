@@ -9,11 +9,13 @@ public class Zombie : Enemy
 
     BehaviorTree BT;    //AI 메인루프
 
-    void Start()
+    private void OnEnable()
     {
-        base.SetUp();
-
         StartCoroutine(Update_Coroutine());
+    }
+    private void OnDisable()
+    {
+        StopAllCoroutines();
     }
 
     IEnumerator Update_Coroutine()
@@ -50,7 +52,12 @@ public class Zombie : Enemy
 
     public override bool Hit(float _damage)
     {
-        Debug.Log(gameObject.name.ToString());
+        HP -= _damage;
+        Debug.Log(gameObject.name.ToString() + " " + "HP : " + HP.ToString()) ;
+
+        if (HP <= 0.0f)
+            this.gameObject.SetActive(false);
+
         return true;
     }
 }

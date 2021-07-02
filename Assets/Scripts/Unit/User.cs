@@ -16,17 +16,32 @@ public class User : Unit
     bool isWallJump;
     bool isDoubleJump;
 
+    public GameObject BulletObject;
+    public List<GameObject> BulletPool;
 
-    void Start()
+    private void OnEnable()
     {
-        base.SetUp();
         JumpMode = JUMPMODE.NormalJump;
         UserClass = USERCALSS.Archer;
+
+        BulletManager.Instance().CreateObject("Arrow", BulletObject.gameObject,10);
+        BulletPool = BulletManager.Instance().GetObjectPool("Arrow");
+        
+        //for (int i = 0; i < 5; ++i)
+        //{
+        //    GameObject g = GameObject.Instantiate(BulletObject);
+        //    g.SetActive(false);
+        //    BulletPool.Add(g);
+
+        //}
+
+
         StartCoroutine(Update_Coroutine());
     }
-    void Update()
-    {
 
+    private void OnDisable()
+    {
+        StopAllCoroutines();
     }
 
     IEnumerator Update_Coroutine()
@@ -116,8 +131,6 @@ public class User : Unit
 
         if (Rigid.velocity.y <= 0)
             Anim.SetInteger("velocity_y_int", (int)Rigid.velocity.y);
-
-        Debug.Log(Rigid.velocity.y.ToString());
     }
     void DodgeAction()
     {
@@ -244,5 +257,50 @@ public class User : Unit
     {
         isDodge = false;
         isAttack = false;
+    }
+
+    void Animation_Fire()
+    {
+        if (Render.flipX == true) //오른쪽
+        {
+            foreach (GameObject obj in BulletPool)
+            {
+                if (obj.activeSelf == false)
+                {
+                    obj.GetComponent<Arrow>().SetUp(
+                        new Vector2(transform.position.x + (-AttackPosition.x), transform.position.y + AttackPosition.y),
+                        Vector2.left,
+                        10,
+                        5,
+                        5.0f);
+
+                    obj.SetActive(true);
+                    BulletManager.Instance().CheckObject("Arrow");
+                    break;
+                }
+            }
+
+        }
+        else
+        {
+            foreach (GameObject obj in BulletPool)
+            {
+                if (obj.activeSelf == false)
+                {
+                    obj.GetComponent<Arrow>().SetUp(
+                        new Vector2(transform.position.x + AttackPosition.x, transform.position.y + AttackPosition.y),
+                        Vector2.right,
+                        10,
+                        5,
+                        5.0f);
+
+                    obj.SetActive(true);
+                    BulletManager.Instance().CheckObject("Arrow");
+                    break;
+                }
+            }
+            
+        }
+        
     }
 }

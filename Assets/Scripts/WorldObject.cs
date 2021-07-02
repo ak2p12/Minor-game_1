@@ -8,7 +8,8 @@ public class WolrdObject : MonoBehaviour, IDamage
     [HideInInspector] public Animator Anim;
     [HideInInspector] public SpriteRenderer Render;
 
-    protected void SetUp()
+
+    private void Awake()
     {
         Anim = GetComponent<Animator>();
         Rigid = GetComponent<Rigidbody2D>();

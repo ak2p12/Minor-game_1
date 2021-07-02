@@ -10,15 +10,9 @@ public class Unit : WolrdObject
     public float MoveSpeed;
     public float JumpPower;
     public float AttackDamage;
+    public Vector2 AttackPosition;
 
     public bool isDead;
-
-
-
-    void Start()
-    {
-
-    }
 
     public override bool Hit(float _damage)
     {
