@@ -12,6 +12,7 @@ public class Arrow : Bullet
         Speed = _speed;
         Damage = _damage;
         LifeTime = _range;
+        this.gameObject.SetActive(true);
     }
 
     private void OnEnable()

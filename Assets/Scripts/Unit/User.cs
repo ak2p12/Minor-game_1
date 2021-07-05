@@ -24,17 +24,9 @@ public class User : Unit
         JumpMode = JUMPMODE.NormalJump;
         UserClass = USERCALSS.Archer;
 
-        BulletManager.Instance().CreateObject("Arrow", BulletObject.gameObject,10);
-        BulletPool = BulletManager.Instance().GetObjectPool("Arrow");
-        
-        //for (int i = 0; i < 5; ++i)
-        //{
-        //    GameObject g = GameObject.Instantiate(BulletObject);
-        //    g.SetActive(false);
-        //    BulletPool.Add(g);
-
-        //}
-
+        BulletManager.Instance().CreateObject("Arrow", BulletObject.gameObject,5);
+        BulletManager.Instance().GetObjectPool("Arrow" , BulletPool);
+        BulletManager.Instance().ReturnObjectPool("Arrow" , BulletPool);
 
         StartCoroutine(Update_Coroutine());
     }
@@ -263,10 +255,13 @@ public class User : Unit
     {
         if (Render.flipX == true) //오른쪽
         {
-            foreach (GameObject obj in BulletPool)
+            bool bulletPoolCheck = false;
+
+            foreach (GameObject obj in BulletPool) //투사체 메모리풀
             {
                 if (obj.activeSelf == false)
                 {
+                    bulletPoolCheck = true;
                     obj.GetComponent<Arrow>().SetUp(
                         new Vector2(transform.position.x + (-AttackPosition.x), transform.position.y + AttackPosition.y),
                         Vector2.left,
@@ -274,19 +269,41 @@ public class User : Unit
                         5,
                         5.0f);
 
-                    obj.SetActive(true);
-                    BulletManager.Instance().CheckObject("Arrow");
                     break;
+                }
+            }
+
+            if (bulletPoolCheck == false) //재사용할 투사체가 없다면 추가로 복사본을 받는다
+            {
+                BulletManager.Instance().GetObjectPool("Arrow" , BulletPool);
+
+                foreach (GameObject obj in BulletPool) //투사체 메모리풀
+                {
+                    if (obj.activeSelf == false)
+                    {
+                        bulletPoolCheck = true;
+                        obj.GetComponent<Arrow>().SetUp(
+                            new Vector2(transform.position.x + (-AttackPosition.x), transform.position.y + AttackPosition.y),
+                            Vector2.left,
+                            10,
+                            5,
+                            5.0f);
+
+                        break;
+                    }
                 }
             }
 
         }
         else
         {
+            bool bulletPoolCheck = false;
+
             foreach (GameObject obj in BulletPool)
             {
                 if (obj.activeSelf == false)
                 {
+                    bulletPoolCheck = true;
                     obj.GetComponent<Arrow>().SetUp(
                         new Vector2(transform.position.x + AttackPosition.x, transform.position.y + AttackPosition.y),
                         Vector2.right,
@@ -294,12 +311,32 @@ public class User : Unit
                         5,
                         5.0f);
 
-                    obj.SetActive(true);
-                    BulletManager.Instance().CheckObject("Arrow");
                     break;
                 }
             }
-            
+
+            if (bulletPoolCheck == false) //재사용할 투사체가 없다면 추가로 복사본을 받는다
+            {
+                BulletManager.Instance().GetObjectPool("Arrow", BulletPool);
+
+                foreach (GameObject obj in BulletPool) //투사체 메모리풀
+                {
+                    if (obj.activeSelf == false)
+                    {
+                        bulletPoolCheck = true;
+                        obj.GetComponent<Arrow>().SetUp(
+                            new Vector2(transform.position.x + AttackPosition.x, transform.position.y + AttackPosition.y),
+                            Vector2.right,
+                            10,
+                            5,
+                            5.0f);
+
+                        break;
+                    }
+                }
+            }
+
+
         }
         
     }
