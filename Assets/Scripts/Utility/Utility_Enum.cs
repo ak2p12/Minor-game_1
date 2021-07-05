@@ -8,6 +8,6 @@ public enum USERCALSS
 {
     Defender,       //방패병
     Archer,         //궁병
-    Mage,           //마법병
+    Magician,       //마법병
     Spearman,       //창병
 }

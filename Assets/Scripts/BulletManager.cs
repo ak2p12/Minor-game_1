@@ -43,6 +43,7 @@ public class BulletManager : MonoBehaviour
             for (int i = 0; i < _createCount; ++i)
             {
                 GameObject obj = GameObject.Instantiate(_object);
+                obj.SetActive(true);
                 obj.SetActive(false);
                 bulletList.Add(obj);
             }
@@ -62,6 +63,7 @@ public class BulletManager : MonoBehaviour
                 for (int i = 0; i < count; ++i)
                 {
                     GameObject obj = GameObject.Instantiate(_object);
+                    obj.SetActive(true);
                     obj.SetActive(false);
                     ObjectPool[_name].Add(obj);
                 }

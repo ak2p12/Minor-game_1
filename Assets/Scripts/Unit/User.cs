@@ -14,19 +14,39 @@ public class User : Unit
     bool isWallCrash;
     bool isWallRide;
     bool isWallJump;
-    bool isDoubleJump;
 
     public GameObject BulletObject;
-    public List<GameObject> BulletPool;
+    [HideInInspector] public List<GameObject> BulletPool;
 
     private void OnEnable()
     {
         JumpMode = JUMPMODE.NormalJump;
-        UserClass = USERCALSS.Archer;
+        //UserClass = USERCALSS.Archer;
+        //BulletManager.Instance();
+        switch (UserClass)
+        {
+            case USERCALSS.Defender:
+                break;
+            case USERCALSS.Archer:
+                {
 
-        BulletManager.Instance().CreateObject("Arrow", BulletObject.gameObject,5);
-        BulletManager.Instance().GetObjectPool("Arrow" , BulletPool);
-        BulletManager.Instance().ReturnObjectPool("Arrow" , BulletPool);
+                    BulletManager.Instance().CreateObject("Arrow", BulletObject.gameObject, 5);
+                    BulletManager.Instance().GetObjectPool("Arrow", BulletPool);
+                    //BulletManager.Instance().ReturnObjectPool("Arrow", BulletPool);
+                }
+                break;
+            case USERCALSS.Magician:
+                {
+                    BulletManager.Instance().CreateObject("FireBall", BulletObject.gameObject, 5);
+                    BulletManager.Instance().GetObjectPool("FireBall", BulletPool);
+                    //BulletManager.Instance().ReturnObjectPool("FireBall", BulletPool);
+                }
+                break;
+            case USERCALSS.Spearman:
+                break;
+        }
+
+       
 
         StartCoroutine(Update_Coroutine());
     }
@@ -145,30 +165,54 @@ public class User : Unit
         switch (UserClass)
         {
             case USERCALSS.Defender:
+                {
+                    if (Input.GetKeyDown(KeyCode.Z) && !isAttack && !isJump && isGround && !isDodge) //위방향 공격
+                    {
+                        int randomAttack = Random.Range(1, 5);
+                        isAttack = true;
+                        Anim.SetTrigger("Attack_" + randomAttack.ToString());
+                    }
+                }
                 break;
             case USERCALSS.Archer:
                 {
-                    
-                    if (Input.GetKeyDown(KeyCode.Z) && Input.GetKey(KeyCode.UpArrow) && !isAttack) //위방향 공격
+                    if (Input.GetKeyDown(KeyCode.Z) && Input.GetKey(KeyCode.UpArrow) && !isAttack && !isJump && isGround && !isDodge) //위방향 공격
                     {
                         isAttack = true;
                         Anim.SetTrigger("Attack_1");
                     }
-                    else if (Input.GetKeyDown(KeyCode.Z) && Input.GetKey(KeyCode.DownArrow) && !isAttack) //아래방향 공격
+                    else if (Input.GetKeyDown(KeyCode.Z) && Input.GetKey(KeyCode.DownArrow) && !isAttack && !isJump && isGround && !isDodge) //아래방향 공격
                     {
                         isAttack = true;
                         Anim.SetTrigger("Attack_3");
                     }
-                    else if (Input.GetKeyDown(KeyCode.Z) && !isAttack) //정면방향 공격
+                    else if (Input.GetKeyDown(KeyCode.Z) && !isAttack && !isJump && isGround && !isDodge) //정면방향 공격
                     {
                         isAttack = true;
                         Anim.SetTrigger("Attack_2");
                     }
                 }
                 break;
-            case USERCALSS.Mage:
+            case USERCALSS.Magician:
+                {
+                    if (Input.GetKeyDown(KeyCode.Z) && !isAttack && !isJump && isGround && !isDodge) //위방향 공격
+                    {
+                        int randomAttack = Random.Range(1, 4);
+                        isAttack = true;
+                        //Anim.SetTrigger("Attack_" + randomAttack.ToString());
+                        Anim.SetTrigger("Attack_3");
+                    }
+                }
                 break;
             case USERCALSS.Spearman:
+                {
+                    if (Input.GetKeyDown(KeyCode.Z) && !isAttack && !isJump && isGround && !isDodge) //위방향 공격
+                    {
+                        int randomAttack = Random.Range(1, 4);
+                        isAttack = true;
+                        Anim.SetTrigger("Attack_" + randomAttack.ToString());
+                    }
+                }
                 break;
         }
         
@@ -253,91 +297,171 @@ public class User : Unit
 
     void Animation_Fire()
     {
-        if (Render.flipX == true) //오른쪽
+        switch (UserClass)
         {
-            bool bulletPoolCheck = false;
-
-            foreach (GameObject obj in BulletPool) //투사체 메모리풀
-            {
-                if (obj.activeSelf == false)
+            case USERCALSS.Defender:
+                break;
+            case USERCALSS.Archer:
                 {
-                    bulletPoolCheck = true;
-                    obj.GetComponent<Arrow>().SetUp(
-                        new Vector2(transform.position.x + (-AttackPosition.x), transform.position.y + AttackPosition.y),
-                        Vector2.left,
-                        10,
-                        5,
-                        5.0f);
-
-                    break;
-                }
-            }
-
-            if (bulletPoolCheck == false) //재사용할 투사체가 없다면 추가로 복사본을 받는다
-            {
-                BulletManager.Instance().GetObjectPool("Arrow" , BulletPool);
-
-                foreach (GameObject obj in BulletPool) //투사체 메모리풀
-                {
-                    if (obj.activeSelf == false)
+                    if (Render.flipX == true) //오른쪽
                     {
-                        bulletPoolCheck = true;
-                        obj.GetComponent<Arrow>().SetUp(
-                            new Vector2(transform.position.x + (-AttackPosition.x), transform.position.y + AttackPosition.y),
-                            Vector2.left,
-                            10,
-                            5,
-                            5.0f);
+                        bool bulletPoolCheck = false;
+                        foreach (GameObject obj in BulletPool) //투사체 메모리풀
+                        {
+                            if (obj.activeSelf == false)
+                            {
+                                bulletPoolCheck = true;
+                                obj.GetComponent<Bullet>().SetUp( new Vector2(transform.position.x + (-AttackPosition.x), transform.position.y + AttackPosition.y),Vector2.left,
+                                    10,
+                                    5,
+                                    5.0f,
+                                    Render.flipX);
+                                break;
+                            }
+                        }
+                        if (bulletPoolCheck == false) //재사용할 투사체가 없다면 추가로 복사본을 받는다
+                        {
+                            BulletManager.Instance().GetObjectPool("Arrow", BulletPool);
+                            foreach (GameObject obj in BulletPool) //투사체 메모리풀
+                            {
+                                if (obj.activeSelf == false)
+                                {
+                                    bulletPoolCheck = true;
+                                    obj.GetComponent<Bullet>().SetUp( new Vector2(transform.position.x + (-AttackPosition.x), transform.position.y + AttackPosition.y),
+                                        Vector2.left,
+                                        10,
+                                        5,
+                                        5.0f,
+                                        Render.flipX);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        bool bulletPoolCheck = false;
+                        foreach (GameObject obj in BulletPool)
+                        {
+                            if (obj.activeSelf == false)
+                            {
+                                bulletPoolCheck = true;
+                                obj.GetComponent<Bullet>().SetUp( new Vector2(transform.position.x + AttackPosition.x, transform.position.y + AttackPosition.y),
+                                    Vector2.right,
+                                    10,
+                                    5,
+                                    5.0f,
+                                    Render.flipX);
+                                break;
+                            }
+                        }
 
-                        break;
+                        if (bulletPoolCheck == false) //재사용할 투사체가 없다면 추가로 복사본을 받는다
+                        {
+                            BulletManager.Instance().GetObjectPool("Arrow", BulletPool);
+                            foreach (GameObject obj in BulletPool) //투사체 메모리풀
+                            {
+                                if (obj.activeSelf == false)
+                                {
+                                    bulletPoolCheck = true;
+                                    obj.GetComponent<Bullet>().SetUp( new Vector2(transform.position.x + AttackPosition.x, transform.position.y + AttackPosition.y),
+                                        Vector2.right,
+                                        10,
+                                        5,
+                                        5.0f,
+                                        Render.flipX);
+                                    break;
+                                }
+                            }
+                        }
+
+
                     }
                 }
-            }
-
-        }
-        else
-        {
-            bool bulletPoolCheck = false;
-
-            foreach (GameObject obj in BulletPool)
-            {
-                if (obj.activeSelf == false)
+                break;
+            case USERCALSS.Magician:
                 {
-                    bulletPoolCheck = true;
-                    obj.GetComponent<Arrow>().SetUp(
-                        new Vector2(transform.position.x + AttackPosition.x, transform.position.y + AttackPosition.y),
-                        Vector2.right,
-                        10,
-                        5,
-                        5.0f);
-
-                    break;
-                }
-            }
-
-            if (bulletPoolCheck == false) //재사용할 투사체가 없다면 추가로 복사본을 받는다
-            {
-                BulletManager.Instance().GetObjectPool("Arrow", BulletPool);
-
-                foreach (GameObject obj in BulletPool) //투사체 메모리풀
-                {
-                    if (obj.activeSelf == false)
+                    if (Render.flipX == true) //오른쪽
                     {
-                        bulletPoolCheck = true;
-                        obj.GetComponent<Arrow>().SetUp(
-                            new Vector2(transform.position.x + AttackPosition.x, transform.position.y + AttackPosition.y),
-                            Vector2.right,
-                            10,
-                            5,
-                            5.0f);
+                        bool bulletPoolCheck = false;
+                        foreach (GameObject obj in BulletPool) //투사체 메모리풀
+                        {
+                            if (obj.activeSelf == false)
+                            {
+                                bulletPoolCheck = true;
+                                obj.GetComponent<Bullet>().SetUp(new Vector2(transform.position.x + (-AttackPosition.x), transform.position.y + AttackPosition.y), Vector2.left,
+                                    10,
+                                    5,
+                                    5.0f,
+                                    Render.flipX);
+                                break;
+                            }
+                        }
+                        if (bulletPoolCheck == false) //재사용할 투사체가 없다면 추가로 복사본을 받는다
+                        {
+                            BulletManager.Instance().GetObjectPool("FireBall", BulletPool);
+                            foreach (GameObject obj in BulletPool) //투사체 메모리풀
+                            {
+                                if (obj.activeSelf == false)
+                                {
+                                    bulletPoolCheck = true;
+                                    obj.GetComponent<Bullet>().SetUp(new Vector2(transform.position.x + (-AttackPosition.x), transform.position.y + AttackPosition.y),
+                                        Vector2.left,
+                                        10,
+                                        5,
+                                        5.0f,
+                                        Render.flipX);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        bool bulletPoolCheck = false;
+                        foreach (GameObject obj in BulletPool)
+                        {
+                            if (obj.activeSelf == false)
+                            {
+                                bulletPoolCheck = true;
+                                obj.GetComponent<Bullet>().SetUp(new Vector2(transform.position.x + AttackPosition.x, transform.position.y + AttackPosition.y),
+                                    Vector2.right,
+                                    10,
+                                    5,
+                                    5.0f,
+                                    Render.flipX);
+                                break;
+                            }
+                        }
 
-                        break;
+                        if (bulletPoolCheck == false) //재사용할 투사체가 없다면 추가로 복사본을 받는다
+                        {
+                            BulletManager.Instance().GetObjectPool("FireBall", BulletPool);
+                            foreach (GameObject obj in BulletPool) //투사체 메모리풀
+                            {
+                                if (obj.activeSelf == false)
+                                {
+                                    bulletPoolCheck = true;
+                                    obj.GetComponent<Bullet>().SetUp(new Vector2(transform.position.x + AttackPosition.x, transform.position.y + AttackPosition.y),
+                                        Vector2.right,
+                                        10,
+                                        5,
+                                        5.0f,
+                                        Render.flipX);
+                                    break;
+                                }
+                            }
+                        }
+
+
                     }
                 }
-            }
-
-
+                break;
+            case USERCALSS.Spearman:
+                break;
         }
+
+        
         
     }
 }
